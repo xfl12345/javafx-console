@@ -17,10 +17,8 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 
 /**
@@ -31,8 +29,23 @@ public abstract class ConsoleApplication extends Application {
 
     private String title;
 
+    private Charset charset;
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
     public void beforeStart() throws Exception {
-        title = getClass().getSimpleName();
+        if (title == null) {
+            title = getClass().getSimpleName();
+        }
+        if (charset == null) {
+            charset = Charset.defaultCharset();
+        }
     }
 
     @Override
@@ -40,7 +53,7 @@ public abstract class ConsoleApplication extends Application {
         beforeStart();
         this.stage = primaryStage;
         final String[] args = getParameters().getRaw().toArray(new String[0]);
-        final ConsoleView console = new ConsoleView();
+        final ConsoleView console = new ConsoleView(charset);
         final Scene scene = new Scene(console);
         final URL styleSheetUrl = getStyleSheetUrl();
         if (styleSheetUrl != null) {
