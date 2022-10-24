@@ -14,7 +14,9 @@ package jp.uphy.javafx.console;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -59,10 +61,20 @@ public abstract class ConsoleApplication extends Application {
         if (styleSheetUrl != null) {
             scene.getStylesheets().add(styleSheetUrl.toString());
         }
+
+        Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
+        double width = screenRectangle.getWidth();
+        double height = screenRectangle.getHeight();
+
         primaryStage.setTitle(title + " - [initializing]");
         primaryStage.setScene(scene);
+        primaryStage.setWidth(width * 0.618);
+        primaryStage.setHeight(height * 0.618);
+
         primaryStage.setOnCloseRequest(e -> System.exit(0));
         primaryStage.show();
+
+        Platform.runLater(primaryStage::toFront);
 
         System.setOut(console.getOut());
         System.setIn(console.getIn());
