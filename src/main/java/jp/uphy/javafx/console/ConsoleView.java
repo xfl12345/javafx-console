@@ -47,11 +47,7 @@ public class ConsoleView extends BorderPane {
         setCenter(this.textArea);
 
         final TextInputControlStream stream = new TextInputControlStream(this.textArea, Charset.defaultCharset());
-        try {
-            this.out = new PrintStream(stream.getOut(), true, charset.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        this.out = new PrintStream(stream.getOut(), true, charset);
         this.in = stream.getIn();
 
         final ContextMenu menu = new ContextMenu();

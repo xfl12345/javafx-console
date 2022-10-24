@@ -78,10 +78,7 @@ public abstract class ConsoleApplication extends Application {
             return url;
         }
         url = ConsoleApplication.class.getResource(styleSheetName);
-        if (url != null) {
-            return url;
-        }
-        return null;
+        return url;
     }
 
     protected final void setPauseBeforeExit(final boolean pauseBeforeExit) {
