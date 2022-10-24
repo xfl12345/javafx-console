@@ -27,12 +27,17 @@ import java.net.URL;
  * @author Yuhi Ishikura
  */
 public abstract class ConsoleApplication extends Application {
-
-    private boolean pauseBeforeExit = true;
     private Stage stage;
+
+    private String title;
+
+    public void beforeStart() throws Exception {
+        title = getClass().getSimpleName();
+    }
 
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        beforeStart();
         this.stage = primaryStage;
         final String[] args = getParameters().getRaw().toArray(new String[0]);
         final ConsoleView console = new ConsoleView();
@@ -41,7 +46,7 @@ public abstract class ConsoleApplication extends Application {
         if (styleSheetUrl != null) {
             scene.getStylesheets().add(styleSheetUrl.toString());
         }
-        primaryStage.setTitle(getClass().getSimpleName());
+        primaryStage.setTitle(title + " - [initializing]");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(e -> System.exit(0));
         primaryStage.show();
@@ -49,26 +54,9 @@ public abstract class ConsoleApplication extends Application {
         System.setOut(console.getOut());
         System.setIn(console.getIn());
         System.setErr(console.getOut());
-        final Thread thread = new Thread(() -> {
-            Throwable throwable = null;
-            try {
-                invokeMain(args);
-            } catch (Throwable e) {
-                throwable = e;
-            }
-            final int result = throwable == null ? 0 : 1;
-            if (this.pauseBeforeExit) {
-                System.out.print("Press enter key to exit.");
-                try {
-                    new BufferedReader(new InputStreamReader(System.in)).readLine();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-            System.exit(result);
-        });
-        thread.setName("Console Application Main Thread");
-        thread.start();
+        primaryStage.setTitle(title + " - [running]");
+        invokeMain(args);
+        primaryStage.setTitle(title + " - [main thread exited]");
     }
 
     protected URL getStyleSheetUrl() {
@@ -81,14 +69,15 @@ public abstract class ConsoleApplication extends Application {
         return url;
     }
 
-    protected final void setPauseBeforeExit(final boolean pauseBeforeExit) {
-        this.pauseBeforeExit = pauseBeforeExit;
+    public String getTitle() {
+        return this.stage.getTitle();
     }
 
     public void setTitle(final String title) {
+        this.title = title;
         Platform.runLater(() -> this.stage.setTitle(title));
     }
 
-    protected abstract void invokeMain(String[] args);
+    protected abstract void invokeMain(String[] args) throws Exception;
 
 }

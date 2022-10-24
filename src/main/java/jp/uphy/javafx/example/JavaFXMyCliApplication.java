@@ -25,7 +25,7 @@ import java.io.IOException;
 public class JavaFXMyCliApplication extends ConsoleApplication {
 
     @Override
-    protected void invokeMain(final String[] args) {
+    protected void invokeMain(final String[] args) throws Exception {
         MyCliApplication.main(args);
     }
 
