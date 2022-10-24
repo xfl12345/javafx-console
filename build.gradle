@@ -1,0 +1,125 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'java'
+    id 'application'
+    id 'maven-publish'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+}
+
+eclipse {
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+java {
+    compileJava.options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    compileJava.options.encoding = 'UTF-8'
+    withSourcesJar()
+    // withJavadocJar()
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+javafx {
+    version = '17.0.2'
+    modules = [
+        'javafx.controls',
+        'javafx.fxml',
+        'javafx.graphics',
+        'javafx.media',
+        'javafx.web'
+    ]
+}
+
+application {
+    mainClass = 'jp.uphy.javafx.example.JavaFXMyCliApplication'
+}
+
+run {
+    jvmArgs('-Dfile.encoding=UTF-8')
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            // from components.java
+            artifact sourcesJar
+            artifact jar
+        }
+    }
+}
+
+group = 'jp.uphy.javafx'
+version = '1.0.2'
+sourceCompatibility = JavaVersion.VERSION_17
+if (getProject().file('config.gradle').exists()) {
+    apply from: 'config.gradle'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    gradlePluginPortal()
+    maven { url 'https://repo.spring.io/release' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://maven.aliyun.com/repository/spring' }
+    maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
+}
+
+import java.nio.charset.StandardCharsets
+
+dependencies {
+    // 补全环境，使得 Intelij IDEA 可以调试 build.gradle
+    // https://search.maven.org/artifact/org.apache.groovy/groovy-all/4.0.4/pom
+    testRuntimeOnly 'org.apache.groovy:groovy:4.0.6'
+
+    File localDevModeConfFile = getProject().file('localDevMode');
+    boolean isLocalDevMode = false;
+    if (localDevModeConfFile.exists()) {
+        FileReader fileReader = new FileReader(localDevModeConfFile, StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        try {
+            String localDevMode = bufferedReader.readLine();
+            isLocalDevMode = 'true'.equals(localDevMode);
+        } catch (Exception ignored) {
+        } finally {
+            bufferedReader.close();
+            fileReader.close();
+        }
+    }
+
+    // testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+    // testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+
+    testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.7.5') {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
+    // providedRuntime(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+    //     exclude group: 'com.vaadin.external.google', module: 'android-json'
+    // }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
