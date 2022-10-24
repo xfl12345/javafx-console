@@ -24,13 +24,13 @@ import java.io.IOException;
  */
 public class JavaFXMyCliApplication extends ConsoleApplication {
 
-  @Override
-  protected void invokeMain(final String[] args) {
-    MyCliApplication.main(args);
-  }
+    @Override
+    protected void invokeMain(final String[] args) {
+        MyCliApplication.main(args);
+    }
 
-  public static void main(String[] args) throws IOException, InterruptedException {
-    launch(args);
-  }
+    public static void main(String[] args) throws IOException, InterruptedException {
+        launch(args);
+    }
 
 }

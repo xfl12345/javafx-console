@@ -19,14 +19,14 @@ package jp.uphy.javafx.example;
  */
 public class MyCliApplication {
 
-  public static void main(String[] args) {
-    System.out.println("Before sleep");
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+    public static void main(String[] args) {
+        System.out.println("Before sleep");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("After sleep");
     }
-    System.out.println("After sleep");
-  }
 
 }

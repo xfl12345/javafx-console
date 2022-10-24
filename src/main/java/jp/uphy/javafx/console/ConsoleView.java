@@ -31,56 +31,56 @@ import java.nio.charset.Charset;
  */
 public class ConsoleView extends BorderPane {
 
-  private final PrintStream out;
-  private final TextArea textArea;
-  private final InputStream in;
+    private final PrintStream out;
+    private final TextArea textArea;
+    private final InputStream in;
 
-  public ConsoleView() {
-    this(Charset.defaultCharset());
-  }
-
-  public ConsoleView(Charset charset) {
-    getStyleClass().add("console");
-    this.textArea = new TextArea();
-    this.textArea.setWrapText(true);
-    KeyBindingUtils.installEmacsKeyBinding(this.textArea);
-    setCenter(this.textArea);
-
-    final TextInputControlStream stream = new TextInputControlStream(this.textArea, Charset.defaultCharset());
-    try {
-      this.out = new PrintStream(stream.getOut(), true, charset.name());
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+    public ConsoleView() {
+        this(Charset.defaultCharset());
     }
-    this.in = stream.getIn();
 
-    final ContextMenu menu = new ContextMenu();
-    menu.getItems().add(createItem("Clear console", e -> {
-      try {
-        stream.clear();
-        this.textArea.clear();
-      } catch (IOException e1) {
-        throw new RuntimeException(e1);
-      }
-    }));
-    this.textArea.setContextMenu(menu);
+    public ConsoleView(Charset charset) {
+        getStyleClass().add("console");
+        this.textArea = new TextArea();
+        this.textArea.setWrapText(true);
+        KeyBindingUtils.installEmacsKeyBinding(this.textArea);
+        setCenter(this.textArea);
 
-    setPrefWidth(600);
-    setPrefHeight(400);
-  }
+        final TextInputControlStream stream = new TextInputControlStream(this.textArea, Charset.defaultCharset());
+        try {
+            this.out = new PrintStream(stream.getOut(), true, charset.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        this.in = stream.getIn();
 
-  private MenuItem createItem(String name, EventHandler<ActionEvent> a) {
-    final MenuItem menuItem = new MenuItem(name);
-    menuItem.setOnAction(a);
-    return menuItem;
-  }
+        final ContextMenu menu = new ContextMenu();
+        menu.getItems().add(createItem("Clear console", e -> {
+            try {
+                stream.clear();
+                this.textArea.clear();
+            } catch (IOException e1) {
+                throw new RuntimeException(e1);
+            }
+        }));
+        this.textArea.setContextMenu(menu);
 
-  public PrintStream getOut() {
-    return out;
-  }
+        setPrefWidth(600);
+        setPrefHeight(400);
+    }
 
-  public InputStream getIn() {
-    return in;
-  }
+    private MenuItem createItem(String name, EventHandler<ActionEvent> a) {
+        final MenuItem menuItem = new MenuItem(name);
+        menuItem.setOnAction(a);
+        return menuItem;
+    }
+
+    public PrintStream getOut() {
+        return out;
+    }
+
+    public InputStream getIn() {
+        return in;
+    }
 
 }
