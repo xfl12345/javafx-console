@@ -22,7 +22,6 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 
@@ -42,6 +41,7 @@ public class ConsoleView extends BorderPane {
     public ConsoleView(Charset charset) {
         getStyleClass().add("console");
         this.textArea = new TextArea();
+        // this.textArea.
         this.textArea.setWrapText(true);
         KeyBindingUtils.installEmacsKeyBinding(this.textArea);
         setCenter(this.textArea);
