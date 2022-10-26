@@ -33,6 +33,19 @@ public abstract class ConsoleApplication extends Application {
 
     private Charset charset;
 
+    public Stage getStage() {
+        return stage;
+    }
+
+    public String getTitle() {
+        return this.stage.getTitle();
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+        Platform.runLater(() -> this.stage.setTitle(title));
+    }
+
     public Charset getCharset() {
         return charset;
     }
@@ -101,15 +114,6 @@ public abstract class ConsoleApplication extends Application {
         }
         url = ConsoleApplication.class.getResource(styleSheetName);
         return url;
-    }
-
-    public String getTitle() {
-        return this.stage.getTitle();
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-        Platform.runLater(() -> this.stage.setTitle(title));
     }
 
     protected abstract void invokeMain(String[] args) throws Exception;
