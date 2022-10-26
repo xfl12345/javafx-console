@@ -92,14 +92,16 @@ public abstract class ConsoleApplication extends Application {
         System.setOut(console.getOut());
         System.setIn(console.getIn());
         System.setErr(console.getOut());
-        setTitle(title + " - [running]");
+
+        primaryStage.setTitle(title + " - [running]");
+        String titleBackup = title;
         Thread thread = new Thread(() -> {
             try {
                 invokeMain(args);
-                setTitle(title + " - [main thread exited]");
+                setTitle(titleBackup + " - [main thread exited]");
             } catch (Exception e) {
                 e.printStackTrace();
-                setTitle(title + " - [error occurred]");
+                setTitle(titleBackup + " - [error occurred]");
             }
         });
         thread.setName("Console Application Main Thread");
