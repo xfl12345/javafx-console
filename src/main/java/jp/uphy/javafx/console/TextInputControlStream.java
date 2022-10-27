@@ -14,8 +14,6 @@ package jp.uphy.javafx.console;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -37,22 +35,6 @@ class TextInputControlStream {
         this.charset = charset;
         this.in = new TextInputControlInputStream(textInputControl);
         this.out = new TextInputControlOutputStream(textInputControl);
-
-        textInputControl.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ENTER) {
-                getIn().enterKeyPressed();
-                return;
-            }
-
-            if (textInputControl.getCaretPosition() <= getIn().getLastLineBreakIndex()) {
-                e.consume();
-            }
-        });
-        textInputControl.addEventFilter(KeyEvent.KEY_TYPED, e -> {
-            if (textInputControl.getCaretPosition() < getIn().getLastLineBreakIndex()) {
-                e.consume();
-            }
-        });
     }
 
     void clear() throws IOException {
