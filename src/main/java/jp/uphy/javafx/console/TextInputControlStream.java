@@ -31,10 +31,13 @@ class TextInputControlStream {
     private final TextInputControlOutputStream out;
     private final Charset charset;
 
-    TextInputControlStream(final TextInputControl textInputControl, Charset charset) {
+    private final int safeByteTotalLimit;
+
+    TextInputControlStream(final TextInputControl textInputControl, Charset charset, int safeByteTotalLimit) {
         this.charset = charset;
         this.in = new TextInputControlInputStream(textInputControl);
         this.out = new TextInputControlOutputStream(textInputControl);
+        this.safeByteTotalLimit = safeByteTotalLimit;
     }
 
     void clear() throws IOException {
@@ -60,6 +63,10 @@ class TextInputControlStream {
 
     Charset getCharset() {
         return this.charset;
+    }
+
+    public int getOutputByteCount() {
+        return out.getCacheSize();
     }
 
     /**
@@ -228,15 +235,23 @@ class TextInputControlStream {
                 if (this.buf == null) {
                     return;
                 }
-                startProgramInput();
-                final ByteBuffer byteBuffer = ByteBuffer.wrap(this.buf.toByteArray());
-                final CharBuffer charBuffer = this.decoder.decode(byteBuffer);
-                try {
-                    this.textInputControl.appendText(charBuffer.toString());
-                    this.textInputControl.positionCaret(this.textInputControl.getLength());
-                } finally {
-                    this.buf = null;
-                    endProgramInput();
+
+                // 设定一个安全极限
+                if (this.buf.size() > safeByteTotalLimit) {
+                    in.clear();
+                    this.buf = new ByteArrayOutputStream();
+                    this.textInputControl.clear();
+                } else {
+                    startProgramInput();
+                    final ByteBuffer byteBuffer = ByteBuffer.wrap(this.buf.toByteArray());
+                    final CharBuffer charBuffer = this.decoder.decode(byteBuffer);
+                    try {
+                        this.textInputControl.appendText(charBuffer.toString());
+                        this.textInputControl.positionCaret(this.textInputControl.getLength());
+                    } finally {
+                        this.buf = null;
+                        endProgramInput();
+                    }
                 }
             }
         }
@@ -253,6 +268,9 @@ class TextInputControlStream {
             this.buf = null;
         }
 
+        public int getCacheSize() {
+            return buf.size();
+        }
     }
 
 }

@@ -33,6 +33,8 @@ public abstract class ConsoleApplication extends Application {
 
     private Charset charset;
 
+    private int safeByteTotalLimit = (Short.MAX_VALUE << 3);
+
     public Stage getStage() {
         return stage;
     }
@@ -54,6 +56,14 @@ public abstract class ConsoleApplication extends Application {
         this.charset = charset;
     }
 
+    public int getSafeByteTotalLimit() {
+        return safeByteTotalLimit;
+    }
+
+    public void setSafeByteTotalLimit(int safeByteTotalLimit) {
+        this.safeByteTotalLimit = safeByteTotalLimit;
+    }
+
     public void beforeStart() throws Exception {
         if (title == null) {
             title = getClass().getSimpleName();
@@ -68,7 +78,11 @@ public abstract class ConsoleApplication extends Application {
         beforeStart();
         this.stage = primaryStage;
         final String[] args = getParameters().getRaw().toArray(new String[0]);
-        final ConsoleView console = new ConsoleView(charset);
+        final ConsoleView console = new ConsoleView();
+        console.setCharset(charset);
+        console.setSafeByteTotalLimit(safeByteTotalLimit);
+        console.init();
+
         final Scene scene = new Scene(console);
         final URL styleSheetUrl = getStyleSheetUrl();
         if (styleSheetUrl != null) {

@@ -30,23 +30,28 @@ import java.nio.charset.Charset;
  */
 public class ConsoleView extends BorderPane {
 
-    private final PrintStream out;
-    private final TextArea textArea;
-    private final InputStream in;
+    private PrintStream out;
+    private TextArea textArea;
+    private InputStream in;
 
-    public ConsoleView() {
-        this(Charset.defaultCharset());
-    }
+    private Charset charset;
 
-    public ConsoleView(Charset charset) {
+    private int safeByteTotalLimit;
+
+    public ConsoleView() {}
+
+    public void init() {
+        if (charset == null) {
+            charset = Charset.defaultCharset();
+        }
+
         getStyleClass().add("console");
         this.textArea = new TextArea();
-        // this.textArea.
         this.textArea.setWrapText(true);
         KeyBindingUtils.installEmacsKeyBinding(this.textArea);
         setCenter(this.textArea);
 
-        final TextInputControlStream stream = new TextInputControlStream(this.textArea, Charset.defaultCharset());
+        final TextInputControlStream stream = new TextInputControlStream(this.textArea, Charset.defaultCharset(), safeByteTotalLimit);
         this.out = new PrintStream(stream.getOut(), true, charset);
         this.in = stream.getIn();
 
@@ -63,6 +68,23 @@ public class ConsoleView extends BorderPane {
 
         setPrefWidth(600);
         setPrefHeight(400);
+
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public void setSafeByteTotalLimit(int safeByteTotalLimit) {
+        this.safeByteTotalLimit = safeByteTotalLimit;
+    }
+
+    public int getSafeByteTotalLimit() {
+        return safeByteTotalLimit;
     }
 
     private MenuItem createItem(String name, EventHandler<ActionEvent> a) {
@@ -79,4 +101,7 @@ public class ConsoleView extends BorderPane {
         return in;
     }
 
+    public TextArea getTextArea() {
+        return textArea;
+    }
 }
